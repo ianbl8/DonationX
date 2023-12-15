@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.ianbl8.donationx.databinding.ActivityDonateBinding
+import timber.log.Timber
 
 class Donate : AppCompatActivity() {
     private lateinit var donateLayout: ActivityDonateBinding
@@ -35,6 +36,7 @@ class Donate : AppCompatActivity() {
                     .show()
             } else {
                 totalDonated += amount
+                Timber.i("Total donated so far: \$$totalDonated")
                 donateLayout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
                 donateLayout.progressBar.progress = totalDonated
             }
