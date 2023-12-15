@@ -25,6 +25,7 @@ class Donate : AppCompatActivity() {
         setContentView(donateLayout.root)
 
         donateLayout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
+        donateLayout.progressBar.progress = totalDonated
         donateLayout.progressBar.max = 10000
         donateLayout.amountPicker.minValue = 1
         donateLayout.amountPicker.maxValue = 1000
@@ -74,5 +75,12 @@ class Donate : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        totalDonated = app.donationsStore.findAll().sumOf { it.amount }
+        donateLayout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
+        donateLayout.progressBar.progress = totalDonated
     }
 }
