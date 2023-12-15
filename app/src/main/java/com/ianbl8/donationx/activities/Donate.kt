@@ -1,7 +1,10 @@
 package com.ianbl8.donationx.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.ActivityDonateBinding
@@ -54,6 +57,22 @@ class Donate : AppCompatActivity() {
                 donateLayout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
                 donateLayout.progressBar.progress = totalDonated
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_donate, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_report -> {
+                startActivity(Intent(this, Report::class.java))
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
