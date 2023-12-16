@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/donateFragment"
         android:name="com.ianbl8.donationx.fragments.DonateFragment"
-        android:label="fragment_donate"
+        android:label="@string/action_donate"
         tools:layout="@layout/fragment_donate" >
         <action
             android:id="@+id/action_donateFragment_to_reportFragment"
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.ianbl8.donationx.fragments.ReportFragment"
-        android:label="fragment_report"
+        android:label="@string/action_report"
         tools:layout="@layout/fragment_report" >
         <action
             android:id="@+id/action_reportFragment_to_donateFragment"
