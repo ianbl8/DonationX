@@ -1,4 +1,4 @@
-package com.ianbl8.donationx.fragments
+package com.ianbl8.donationx.ui.donate
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +9,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.ianbl8.donationx.R
@@ -23,11 +28,12 @@ class DonateFragment : Fragment() {
     var totalDonated = 0
     private var _fragBinding: FragmentDonateBinding? = null
     private val fragBinding get() = _fragBinding!!
+    private lateinit var donateViewModel: DonateViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = activity?.application as DonationXApp
-        setHasOptionsMenu(true)
+        // setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -37,6 +43,10 @@ class DonateFragment : Fragment() {
         _fragBinding = FragmentDonateBinding.inflate(inflater, container, false)
         val root = fragBinding.root
         activity?.title = getString(R.string.action_donate)
+
+        setupMenu()
+        donateViewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
+        donateViewModel.text.observe(viewLifecycleOwner, Observer { })
 
         fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
         fragBinding.progressBar.progress = totalDonated
@@ -52,16 +62,20 @@ class DonateFragment : Fragment() {
         return root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_donate, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+    private fun setupMenu() {
+        (requireActivity() as MenuHost).addMenuProvider(object: MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                // super.onPrepareMenu(menu)
+            }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return NavigationUI.onNavDestinationSelected(
-            item,
-            requireView().findNavController()
-        ) || super.onOptionsItemSelected(item)
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_donate, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return NavigationUI.onNavDestinationSelected(menuItem, requireView().findNavController())
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onDestroyView() {
