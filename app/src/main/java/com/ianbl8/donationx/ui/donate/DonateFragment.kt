@@ -18,13 +18,12 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.FragmentDonateBinding
-import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
+import com.ianbl8.donationx.ui.report.ReportViewModel
 import timber.log.Timber
 
 class DonateFragment : Fragment() {
 
-    lateinit var app: DonationXApp
     var totalDonated = 0
     private var _fragBinding: FragmentDonateBinding? = null
     private val fragBinding get() = _fragBinding!!
@@ -32,7 +31,6 @@ class DonateFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity?.application as DonationXApp
         // setHasOptionsMenu(true)
     }
 
@@ -42,11 +40,13 @@ class DonateFragment : Fragment() {
     ): View? {
         _fragBinding = FragmentDonateBinding.inflate(inflater, container, false)
         val root = fragBinding.root
-        activity?.title = getString(R.string.action_donate)
+        // activity?.title = getString(R.string.action_donate)
 
         setupMenu()
         donateViewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
-        donateViewModel.text.observe(viewLifecycleOwner, Observer { })
+        donateViewModel.observableStatus.observe(viewLifecycleOwner, Observer { status ->
+            status.let { render(status) }
+        })
 
         fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
         fragBinding.progressBar.progress = totalDonated
@@ -63,7 +63,7 @@ class DonateFragment : Fragment() {
     }
 
     private fun setupMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object: MenuProvider {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // super.onPrepareMenu(menu)
             }
@@ -73,9 +73,25 @@ class DonateFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return NavigationUI.onNavDestinationSelected(menuItem, requireView().findNavController())
+                return NavigationUI.onNavDestinationSelected(
+                    menuItem,
+                    requireView().findNavController()
+                )
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun render(status: Boolean) {
+        when (status) {
+            true -> {
+                view?.let {
+                    // findNavController().popBackStack()
+                }
+            }
+
+            false -> Toast.makeText(context, getString(R.string.donationError), Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     override fun onDestroyView() {
@@ -85,9 +101,12 @@ class DonateFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        totalDonated = app.donationsStore.findAll().sumOf { it.amount }
-        fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
-        fragBinding.progressBar.progress = totalDonated
+        val reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
+        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer{
+            totalDonated = reportViewModel.observableDonationsList.value!!.sumOf { it.amount }
+            fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
+            fragBinding.progressBar.progress = totalDonated
+        })
     }
 
     fun setButtonListener(layout: FragmentDonateBinding) {
@@ -104,7 +123,7 @@ class DonateFragment : Fragment() {
                     if (layout.paymentMethod.checkedRadioButtonId == R.id.Direct) "Direct" else "Paypal"
                 totalDonated += amount
                 Timber.i("Total donated so far: \$$totalDonated")
-                app.donationsStore.create(
+                donateViewModel.addDonation(
                     DonationModel(
                         paymentmethod = paymentmethod,
                         amount = amount

@@ -23,5 +23,6 @@
     <string name="action_about">About Us</string>
     <string name="aboutus_title">Homer for President!</string>
     <string name="aboutus_message">Hi, I\'m Homer.\n\nPlease vote for me!\n\nAnd please donate\nto my campaign!</string>
+    <string name="donationError">Error: could not save donation.</string>
     <string name="donationsNotFound">No donations yet.\nMake a donation!</string>
 </resources>
