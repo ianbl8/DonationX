@@ -1,7 +1,7 @@
 package com.ianbl8.donationx.main
 
 import android.app.Application
-import com.ianbl8.donationx.models.DonationMemStore
+import com.ianbl8.donationx.models.DonationManager
 import com.ianbl8.donationx.models.DonationStore
 import timber.log.Timber
 
@@ -11,7 +11,7 @@ class DonationXApp: Application() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-        donationsStore = DonationMemStore()
+        // donationsStore = DonationManager()
         Timber.i("Starting DonationX application")
     }
 }

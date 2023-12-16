@@ -14,12 +14,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.adapters.DonationAdapter
 import com.ianbl8.donationx.databinding.FragmentReportBinding
 import com.ianbl8.donationx.main.DonationXApp
+import com.ianbl8.donationx.models.DonationModel
+import timber.log.Timber
 
 class ReportFragment : Fragment() {
 
@@ -30,7 +34,6 @@ class ReportFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity?.application as DonationXApp
         // setHasOptionsMenu(true)
     }
 
@@ -39,20 +42,27 @@ class ReportFragment : Fragment() {
     ): View? {
         _fragBinding = FragmentReportBinding.inflate(inflater, container, false)
         val root = fragBinding.root
-        activity?.title = getString(R.string.action_report)
 
         setupMenu()
-        reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
-        reportViewModel.text.observe(viewLifecycleOwner, Observer {  })
+        fragBinding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        fragBinding.recyclerView.setLayoutManager(LinearLayoutManager(activity))
-        fragBinding.recyclerView.adapter = DonationAdapter(app.donationsStore.findAll())
+        reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
+        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
+                donations ->
+            donations?.let { render(donations) }
+        })
+
+        val fab: FloatingActionButton = fragBinding.fab
+        fab.setOnClickListener {
+            val action = ReportFragmentDirections.actionReportFragmentToDonateFragment()
+            findNavController().navigate(action)
+        }
 
         return root
     }
 
     private fun setupMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object: MenuProvider {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // super.onPrepareMenu(menu)
             }
@@ -62,9 +72,30 @@ class ReportFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return NavigationUI.onNavDestinationSelected(menuItem, requireView().findNavController())
+                return NavigationUI.onNavDestinationSelected(
+                    menuItem,
+                    requireView().findNavController()
+                )
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun render(donationsList: List<DonationModel>) {
+        fragBinding.recyclerView.adapter = DonationAdapter(donationsList)
+        if (donationsList.isEmpty()) {
+            Timber.i("donationsList is empty")
+            fragBinding.recyclerView.visibility = View.GONE
+            fragBinding.donationsNotFound.visibility = View.VISIBLE
+        } else {
+            Timber.i("donationsList is NOT empty")
+            fragBinding.recyclerView.visibility = View.VISIBLE
+            fragBinding.donationsNotFound.visibility = View.GONE
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reportViewModel.load()
     }
 
     override fun onDestroyView() {
