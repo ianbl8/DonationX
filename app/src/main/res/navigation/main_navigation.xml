@@ -27,6 +27,11 @@
             app:destination="@id/donateFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_reportFragment_to_donationDetailFragment"
+            app:destination="@id/donationDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
@@ -34,4 +39,16 @@
         android:name="com.ianbl8.donationx.ui.about.AboutusFragment"
         android:label="@string/action_about"
         tools:layout="@layout/fragment_aboutus" />
+
+    <fragment
+        android:id="@+id/donationDetailFragment"
+        android:name="com.ianbl8.donationx.ui.detail.DonationDetailFragment"
+        android:label="@string/donationDetails"
+        tools:layout="@layout/fragment_donation_detail" >
+        <action
+            android:id="@+id/action_donationDetailFragment_to_reportFragment"
+            app:destination="@id/reportFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
 </navigation>

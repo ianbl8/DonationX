@@ -25,4 +25,9 @@
     <string name="aboutus_message">Hi, I\'m Homer.\n\nPlease vote for me!\n\nAnd please donate\nto my campaign!</string>
     <string name="donationError">Error: could not save donation.</string>
     <string name="donationsNotFound">No donations yet.\nMake a donation!</string>
+    <string name="donationDetails">Donation Details</string>
+    <string name="amt">Amount: </string>
+    <string name="payment">Payment: </string>
+    <string name="message">Message: </string>
+    <string name="upvotes">Upvotes: </string>
 </resources>

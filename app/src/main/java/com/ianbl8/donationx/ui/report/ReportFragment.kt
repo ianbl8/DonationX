@@ -20,12 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.adapters.DonationAdapter
+import com.ianbl8.donationx.adapters.DonationClickListener
 import com.ianbl8.donationx.databinding.FragmentReportBinding
 import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
 import timber.log.Timber
 
-class ReportFragment : Fragment() {
+class ReportFragment : Fragment(), DonationClickListener {
 
     lateinit var app: DonationXApp
     private var _fragBinding: FragmentReportBinding? = null
@@ -81,7 +82,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun render(donationsList: List<DonationModel>) {
-        fragBinding.recyclerView.adapter = DonationAdapter(donationsList)
+        fragBinding.recyclerView.adapter = DonationAdapter(donationsList, this)
         if (donationsList.isEmpty()) {
             Timber.i("donationsList is empty")
             fragBinding.recyclerView.visibility = View.GONE
@@ -91,6 +92,11 @@ class ReportFragment : Fragment() {
             fragBinding.recyclerView.visibility = View.VISIBLE
             fragBinding.donationsNotFound.visibility = View.GONE
         }
+    }
+
+    override fun onDonationClick(donation: DonationModel) {
+        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment()
+        findNavController().navigate(action)
     }
 
     override fun onResume() {
