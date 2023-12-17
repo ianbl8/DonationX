@@ -63,6 +63,10 @@ object DonationManager: DonationStore {
         })
     }
 
+    override fun delete(id: String) {
+        TODO("Not yet implemented")
+    }
+
 /*
     fun logAll() {
         Timber.v("** Donations List **")

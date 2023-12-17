@@ -17,7 +17,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.adapters.DonationAdapter
@@ -25,6 +27,7 @@ import com.ianbl8.donationx.adapters.DonationClickListener
 import com.ianbl8.donationx.databinding.FragmentReportBinding
 import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
+import com.ianbl8.donationx.utils.SwipeToDeleteCallback
 import com.ianbl8.donationx.utils.createLoader
 import com.ianbl8.donationx.utils.hideLoader
 import com.ianbl8.donationx.utils.showLoader
@@ -71,6 +74,16 @@ class ReportFragment : Fragment(), DonationClickListener {
         }
 
         setSwipeRefresh()
+
+        val swipeDeleteHandler = object: SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = fragBinding.recyclerView.adapter as DonationAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+            }
+        }
+
+        val itemTouchDeleteHelper = ItemTouchHelper(swipeDeleteHandler)
+        itemTouchDeleteHelper.attachToRecyclerView(fragBinding.recyclerView)
 
         return root
     }

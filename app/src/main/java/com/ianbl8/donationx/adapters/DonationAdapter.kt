@@ -12,7 +12,7 @@ interface DonationClickListener {
 }
 
 class DonationAdapter constructor(
-    private var donations: List<DonationModel>,
+    private var donations: ArrayList<DonationModel>,
     private val listener: DonationClickListener
 ) :
     RecyclerView.Adapter<DonationAdapter.MainHolder>() {
@@ -28,6 +28,11 @@ class DonationAdapter constructor(
     }
 
     override fun getItemCount(): Int = donations.size
+
+    fun removeAt(position: Int) {
+        donations.removeAt(position)
+        notifyItemRemoved(position)
+    }
 
     inner class MainHolder(val binding: CardDonationBinding) :
         RecyclerView.ViewHolder(binding.root) {
