@@ -60,6 +60,7 @@ class ReportFragment : Fragment(), DonationClickListener {
             donations?.let {
                 render(donations)
                 hideLoader(loader)
+                checkSwipeRefresh()
             }
         })
 
@@ -68,6 +69,8 @@ class ReportFragment : Fragment(), DonationClickListener {
             val action = ReportFragmentDirections.actionReportFragmentToDonateFragment()
             findNavController().navigate(action)
         }
+
+        setSwipeRefresh()
 
         return root
     }
@@ -102,6 +105,19 @@ class ReportFragment : Fragment(), DonationClickListener {
             fragBinding.recyclerView.visibility = View.VISIBLE
             fragBinding.donationsNotFound.visibility = View.GONE
         }
+    }
+
+    fun setSwipeRefresh() {
+        fragBinding.swiperefresh.setOnRefreshListener {
+            fragBinding.swiperefresh.isRefreshing = true
+            showLoader(loader, "Downloading donations")
+            reportViewModel.load()
+        }
+    }
+
+    fun checkSwipeRefresh() {
+        if (fragBinding.swiperefresh.isRefreshing)
+            fragBinding.swiperefresh.isRefreshing = false
     }
 
     override fun onDonationClick(donation: DonationModel) {
