@@ -6,9 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.fragment.navArgs
 import com.ianbl8.donationx.R
 
 class DonationDetailFragment : Fragment() {
+
+    private val args by navArgs<DonationDetailFragmentArgs>()
 
     companion object {
         fun newInstance() = DonationDetailFragment()
@@ -20,7 +24,9 @@ class DonationDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_donation_detail, container, false)
+        val view = inflater.inflate(R.layout.fragment_donation_detail, container, false)
+        Toast.makeText(context, "Donation ID selected: ${args.donationid}", Toast.LENGTH_LONG).show()
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
