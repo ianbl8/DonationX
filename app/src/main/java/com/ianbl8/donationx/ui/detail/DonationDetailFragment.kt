@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.ianbl8.donationx.databinding.FragmentDonationDetailBinding
-import com.ianbl8.donationx.models.DonationModel
 
 class DonationDetailFragment : Fragment() {
 
@@ -27,18 +26,16 @@ class DonationDetailFragment : Fragment() {
 
         detailViewModel = ViewModelProvider(this).get(DonationDetailViewModel::class.java)
 
-        detailViewModel.observableDonation.observe(viewLifecycleOwner, Observer { donation ->
-            donation?.let { render(donation) }
-        })
+        detailViewModel.observableDonation.observe(viewLifecycleOwner, Observer { render() })
         return root
     }
 
-    private fun render(donation: DonationModel) {
-        fragBinding.editAmount.setText(donation.amount.toString())
-        fragBinding.editPaymenttype.setText(donation.paymentmethod)
+    private fun render() {
+        // fragBinding.editAmount.setText(donation.amount.toString())
+        // fragBinding.editPaymenttype.setText(donation.paymentmethod)
         fragBinding.editMessage.setText("a message")
         fragBinding.editUpvotes.setText("0")
-        // fragBinding.donationvm = detailViewModel
+        fragBinding.donationvm = detailViewModel
     }
 
     override fun onResume() {
