@@ -9,7 +9,7 @@ internal fun getId(): Long {
 }
 
 object DonationManager: DonationStore {
-    val donations = ArrayList<DonationModel>()
+    private val donations = ArrayList<DonationModel>()
 
     override fun findAll(): List<DonationModel> {
         return donations

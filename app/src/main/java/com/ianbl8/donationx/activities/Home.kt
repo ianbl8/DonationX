@@ -6,8 +6,6 @@ import android.os.Bundle
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.*
 import androidx.navigation.ui.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.HomeBinding
 
@@ -24,12 +22,6 @@ class Home : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
 
         val navController = findNavController(R.id.nav_host_fragment)
 
