@@ -77,8 +77,11 @@ class ReportFragment : Fragment(), DonationClickListener {
 
         val swipeDeleteHandler = object: SwipeToDeleteCallback(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                showLoader(loader, "Deleting donation")
                 val adapter = fragBinding.recyclerView.adapter as DonationAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
+                reportViewModel.delete(viewHolder.itemView.tag as String)
+                hideLoader(loader)
             }
         }
 
