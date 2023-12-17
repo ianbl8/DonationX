@@ -1,5 +1,6 @@
 package com.ianbl8.donationx.ui.report
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,6 +25,9 @@ import com.ianbl8.donationx.adapters.DonationClickListener
 import com.ianbl8.donationx.databinding.FragmentReportBinding
 import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
+import com.ianbl8.donationx.utils.createLoader
+import com.ianbl8.donationx.utils.hideLoader
+import com.ianbl8.donationx.utils.showLoader
 import timber.log.Timber
 
 class ReportFragment : Fragment(), DonationClickListener {
@@ -32,6 +36,7 @@ class ReportFragment : Fragment(), DonationClickListener {
     private var _fragBinding: FragmentReportBinding? = null
     private val fragBinding get() = _fragBinding!!
     private lateinit var reportViewModel: ReportViewModel
+    lateinit var loader: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,14 +48,19 @@ class ReportFragment : Fragment(), DonationClickListener {
     ): View? {
         _fragBinding = FragmentReportBinding.inflate(inflater, container, false)
         val root = fragBinding.root
+        loader = createLoader(requireActivity())
 
         setupMenu()
         fragBinding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
         reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
+        showLoader(loader, "Downloading donations")
         reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
                 donations ->
-            donations?.let { render(donations) }
+            donations?.let {
+                render(donations)
+                hideLoader(loader)
+            }
         })
 
         val fab: FloatingActionButton = fragBinding.fab
