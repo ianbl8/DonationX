@@ -8,11 +8,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 
+/*
 var lastId = 0L
 
 internal fun getId(): Long {
     return lastId++
 }
+ */
 
 object DonationManager: DonationStore {
     private val donations = ArrayList<DonationModel>()
@@ -35,8 +37,8 @@ object DonationManager: DonationStore {
         })
     }
 
-    override fun findById(id: Long): DonationModel? {
-        val foundDonation: DonationModel? = donations.find { it.id == id }
+    override fun findById(id: String): DonationModel? {
+        val foundDonation: DonationModel? = donations.find { it._id == id }
         return foundDonation
     }
 
@@ -61,10 +63,12 @@ object DonationManager: DonationStore {
         })
     }
 
+/*
     fun logAll() {
         Timber.v("** Donations List **")
         donations.forEach {
             Timber.v("Donate ${it}")
         }
     }
+ */
 }

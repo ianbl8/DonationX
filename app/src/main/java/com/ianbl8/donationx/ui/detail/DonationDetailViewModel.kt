@@ -11,7 +11,7 @@ class DonationDetailViewModel : ViewModel() {
 
     val observableDonation: LiveData<DonationModel> get() = donation
 
-    fun getDonation(id: Long) {
+    fun getDonation(id: String) {
         donation.value = DonationManager.findById(id)
     }
 }

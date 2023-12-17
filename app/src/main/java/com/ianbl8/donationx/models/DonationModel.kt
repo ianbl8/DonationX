@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DonationModel(
-    var id: Long = 0,
+    var _id: String = "N/A",
     @SerializedName("paymenttype")
     val paymentmethod: String = "N/A",
     val message: String = "n/a",

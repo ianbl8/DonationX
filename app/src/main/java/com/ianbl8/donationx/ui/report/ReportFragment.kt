@@ -58,7 +58,7 @@ class ReportFragment : Fragment(), DonationClickListener {
         reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
                 donations ->
             donations?.let {
-                render(donations)
+                render(donations as ArrayList<DonationModel>)
                 hideLoader(loader)
                 checkSwipeRefresh()
             }
@@ -94,7 +94,7 @@ class ReportFragment : Fragment(), DonationClickListener {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun render(donationsList: List<DonationModel>) {
+    private fun render(donationsList: ArrayList<DonationModel>) {
         fragBinding.recyclerView.adapter = DonationAdapter(donationsList, this)
         if (donationsList.isEmpty()) {
             Timber.i("donationsList is empty")
@@ -121,7 +121,7 @@ class ReportFragment : Fragment(), DonationClickListener {
     }
 
     override fun onDonationClick(donation: DonationModel) {
-        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation.id)
+        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation._id)
         findNavController().navigate(action)
     }
 
