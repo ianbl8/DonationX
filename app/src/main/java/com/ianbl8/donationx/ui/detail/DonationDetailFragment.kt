@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ianbl8.donationx.databinding.FragmentDonationDetailBinding
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
@@ -30,6 +31,16 @@ class DonationDetailFragment : Fragment() {
         detailViewModel = ViewModelProvider(this).get(DonationDetailViewModel::class.java)
 
         detailViewModel.observableDonation.observe(viewLifecycleOwner, Observer { render() })
+
+        fragBinding.editDonationButton.setOnClickListener {
+            detailViewModel.updateDonation(
+                loggedInViewModel.liveFirebaseUser.value?.email!!,
+                args.donationid,
+                fragBinding.donationvm?.observableDonation!!.value!!
+            )
+            findNavController().navigateUp()
+        }
+
         return root
     }
 
@@ -43,7 +54,10 @@ class DonationDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        detailViewModel.getDonation(loggedInViewModel.liveFirebaseUser.value?.email!!, args.donationid)
+        detailViewModel.getDonation(
+            loggedInViewModel.liveFirebaseUser.value?.email!!,
+            args.donationid
+        )
     }
 
     override fun onDestroyView() {

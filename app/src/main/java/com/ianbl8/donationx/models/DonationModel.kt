@@ -9,8 +9,8 @@ data class DonationModel(
     var _id: String = "N/A",
     @SerializedName("paymenttype")
     val paymentmethod: String = "N/A",
-    val message: String = "n/a",
-    val amount: Int = 0,
-    val upvotes: Int = 0,
+    var message: String = "n/a",
+    var amount: Int = 0,
+    var upvotes: Int = 0,
     var email: String = "joe@bloggs.com",
 ) : Parcelable

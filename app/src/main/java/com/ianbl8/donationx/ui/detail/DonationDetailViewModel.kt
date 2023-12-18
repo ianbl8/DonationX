@@ -21,4 +21,14 @@ class DonationDetailViewModel : ViewModel() {
             Timber.i("Detail getDonation() error: ${e.message}")
         }
     }
+
+    fun updateDonation(email: String, id: String, donation: DonationModel) {
+        try {
+            DonationManager.update(email, id, donation)
+            Timber.i("Detail updateDonation() = ${donation}")
+        }
+        catch (e: Exception) {
+            Timber.i("Detail updateDonation() error: ${e.message}")
+        }
+    }
 }

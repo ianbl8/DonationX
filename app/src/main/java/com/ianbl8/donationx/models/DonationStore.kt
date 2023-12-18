@@ -8,4 +8,5 @@ interface DonationStore {
     fun findById(email: String, id: String, donation: MutableLiveData<DonationModel>)
     fun create(donation: DonationModel)
     fun delete(email: String, id: String)
+    fun update(email: String, id: String, donation: DonationModel)
 }

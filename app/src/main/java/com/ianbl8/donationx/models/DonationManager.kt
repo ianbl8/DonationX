@@ -113,6 +113,27 @@ object DonationManager: DonationStore {
         })
     }
 
+    override fun update(email: String, id: String, donation: DonationModel) {
+        val call = DonationClient.getApi().put(email, id, donation)
+
+        call.enqueue(object: Callback<DonationWrapper> {
+            override fun onResponse(
+                call: Call<DonationWrapper>,
+                response: Response<DonationWrapper>
+            ) {
+                val donationWrapper = response.body()
+                if (donationWrapper != null) {
+                    Timber.i("Retrofit update ${donationWrapper.message}")
+                    Timber.i("Retrofit update ${donationWrapper.data.toString()}")
+                }
+            }
+
+            override fun onFailure(call: Call<DonationWrapper>, t: Throwable) {
+                Timber.i("Retrofit update error: ${t.message}")
+            }
+        })
+    }
+
 /*
     fun logAll() {
         Timber.v("** Donations List **")
