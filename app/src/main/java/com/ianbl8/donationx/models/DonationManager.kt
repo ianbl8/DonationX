@@ -46,18 +46,29 @@ object DonationManager: DonationStore {
                 response: Response<List<DonationModel>>
             ) {
                 donationsList.value = response.body() as ArrayList<DonationModel>
-                Timber.i("Retrofit JSON = ${response.body()}")
+                Timber.i("Retrofit findAll() = ${response.body()}")
             }
 
             override fun onFailure(call: Call<List<DonationModel>>, t: Throwable) {
-                Timber.i("Retrofit error: ${t.message}")
+                Timber.i("Retrofit findAll() error: ${t.message}")
             }
         })
     }
 
-    override fun findById(id: String): DonationModel? {
-        val foundDonation: DonationModel? = donations.find { it._id == id }
-        return foundDonation
+    override fun findById(email: String, id: String, donation: MutableLiveData<DonationModel>) {
+        val call = DonationClient.getApi().get(email, id)
+
+        call.enqueue(object: Callback<DonationModel> {
+            override fun onResponse(call: Call<DonationModel>, response: Response<DonationModel>) {
+                donation.value = response.body() as DonationModel
+                Timber.i("Retrofit findById() = ${response.body()}")
+            }
+
+            override fun onFailure(call: Call<DonationModel>, t: Throwable) {
+                Timber.i("Retrofit findById() error: ${t.message}")
+            }
+        })
+
     }
 
     override fun create(donation: DonationModel) {

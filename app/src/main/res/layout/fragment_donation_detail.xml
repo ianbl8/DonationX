@@ -52,6 +52,7 @@
             android:layout_marginEnd="4dp"
             android:textAlignment="viewStart"
             android:textSize="24sp"
+            android:text="@{donationvm.observableDonation.message}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editPaymenttype" />
 
@@ -62,7 +63,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="4dp"
             android:gravity="center"
-            android:text="test"
+            android:text="@{donationvm.observableDonation.paymentmethod}"
             android:textAlignment="viewStart"
             android:textColor="@color/color_primary"
             android:textSize="24sp"
@@ -79,6 +80,7 @@
             android:ems="10"
             android:inputType="number"
             android:textSize="24sp"
+            android:text="@{Integer.toString(donationvm.observableDonation.upvotes)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editMessage" />
 
@@ -92,6 +94,7 @@
             android:inputType="number"
             android:textAlignment="viewStart"
             android:textSize="24sp"
+            android:text="@{Integer.toString(donationvm.observableDonation.amount)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
