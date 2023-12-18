@@ -11,4 +11,6 @@ data class DonationModel(
     val paymentmethod: String = "N/A",
     val message: String = "n/a",
     val amount: Int = 0,
+    val upvotes: Int = 0,
+    var email: String = "joe@bloggs.com",
 ) : Parcelable

@@ -20,7 +20,25 @@ object DonationManager: DonationStore {
     private val donations = ArrayList<DonationModel>()
 
     override fun findAll(donationsList: MutableLiveData<List<DonationModel>>) {
-        val call = DonationClient.getApi().getall()
+        val call = DonationClient.getApi().findall()
+
+        call.enqueue(object: Callback<List<DonationModel>> {
+            override fun onResponse(
+                call: Call<List<DonationModel>>,
+                response: Response<List<DonationModel>>
+            ) {
+                donationsList.value = response.body() as ArrayList<DonationModel>
+                Timber.i("Retrofit JSON = ${response.body()}")
+            }
+
+            override fun onFailure(call: Call<List<DonationModel>>, t: Throwable) {
+                Timber.i("Retrofit error: ${t.message}")
+            }
+        })
+    }
+
+    override fun findAll(email: String, donationsList: MutableLiveData<List<DonationModel>>) {
+        val call = DonationClient.getApi().findall(email)
 
         call.enqueue(object: Callback<List<DonationModel>> {
             override fun onResponse(
@@ -43,7 +61,7 @@ object DonationManager: DonationStore {
     }
 
     override fun create(donation: DonationModel) {
-        val call = DonationClient.getApi().post(donation)
+        val call = DonationClient.getApi().post(donation.email, donation)
 
         call.enqueue(object: Callback<DonationWrapper> {
             override fun onResponse(
@@ -63,8 +81,8 @@ object DonationManager: DonationStore {
         })
     }
 
-    override fun delete(id: String) {
-        val call = DonationClient.getApi().delete(id)
+    override fun delete(email: String, id: String) {
+        val call = DonationClient.getApi().delete(email, id)
 
         call.enqueue(object: Callback<DonationWrapper> {
             override fun onResponse(

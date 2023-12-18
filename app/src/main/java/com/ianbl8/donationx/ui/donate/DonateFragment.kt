@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +20,7 @@ import androidx.navigation.ui.NavigationUI
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.FragmentDonateBinding
 import com.ianbl8.donationx.models.DonationModel
+import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.ui.report.ReportViewModel
 import timber.log.Timber
 
@@ -28,6 +30,8 @@ class DonateFragment : Fragment() {
     private var _fragBinding: FragmentDonateBinding? = null
     private val fragBinding get() = _fragBinding!!
     private lateinit var donateViewModel: DonateViewModel
+    private val reportViewModel: ReportViewModel by activityViewModels()
+    private val loggedInViewModel: LoggedInViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +52,7 @@ class DonateFragment : Fragment() {
             status.let { render(status) }
         })
 
-        fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
+        fragBinding.totalSoFar.text = String.format(getString(R.string.totalSoFar), totalDonated)
         fragBinding.progressBar.progress = totalDonated
         fragBinding.progressBar.max = 10000
         fragBinding.amountPicker.minValue = 1
@@ -101,12 +105,9 @@ class DonateFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
-        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer{
-            totalDonated = reportViewModel.observableDonationsList.value!!.sumOf { it.amount }
-            fragBinding.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
-            fragBinding.progressBar.progress = totalDonated
-        })
+        totalDonated = reportViewModel.observableDonationsList.value!!.sumOf { it.amount }
+        fragBinding.totalSoFar.text = String.format(getString(R.string.totalSoFar), totalDonated)
+        fragBinding.progressBar.progress = totalDonated
     }
 
     fun setButtonListener(layout: FragmentDonateBinding) {
@@ -126,7 +127,8 @@ class DonateFragment : Fragment() {
                 donateViewModel.addDonation(
                     DonationModel(
                         paymentmethod = paymentmethod,
-                        amount = amount
+                        amount = amount,
+                        email = loggedInViewModel.liveFirebaseUser.value?.email!!
                     )
                 )
                 layout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)

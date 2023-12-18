@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -27,6 +27,7 @@ import com.ianbl8.donationx.adapters.DonationClickListener
 import com.ianbl8.donationx.databinding.FragmentReportBinding
 import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
+import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.utils.SwipeToDeleteCallback
 import com.ianbl8.donationx.utils.createLoader
 import com.ianbl8.donationx.utils.hideLoader
@@ -38,7 +39,8 @@ class ReportFragment : Fragment(), DonationClickListener {
     lateinit var app: DonationXApp
     private var _fragBinding: FragmentReportBinding? = null
     private val fragBinding get() = _fragBinding!!
-    private lateinit var reportViewModel: ReportViewModel
+    private val reportViewModel: ReportViewModel by activityViewModels()
+    private val loggedInViewModel: LoggedInViewModel by activityViewModels()
     lateinit var loader: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,10 +58,8 @@ class ReportFragment : Fragment(), DonationClickListener {
         setupMenu()
         fragBinding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
         showLoader(loader, "Downloading donations")
-        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
-                donations ->
+        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer { donations ->
             donations?.let {
                 render(donations as ArrayList<DonationModel>)
                 hideLoader(loader)
@@ -75,12 +75,15 @@ class ReportFragment : Fragment(), DonationClickListener {
 
         setSwipeRefresh()
 
-        val swipeDeleteHandler = object: SwipeToDeleteCallback(requireContext()) {
+        val swipeDeleteHandler = object : SwipeToDeleteCallback(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 showLoader(loader, "Deleting donation")
                 val adapter = fragBinding.recyclerView.adapter as DonationAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
-                reportViewModel.delete(viewHolder.itemView.tag as String)
+                reportViewModel.delete(
+                    reportViewModel.liveFirebaseUser.value?.email!!,
+                    viewHolder.itemView.tag as String
+                )
                 hideLoader(loader)
             }
         }
@@ -137,13 +140,20 @@ class ReportFragment : Fragment(), DonationClickListener {
     }
 
     override fun onDonationClick(donation: DonationModel) {
-        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation._id)
+        val action =
+            ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation._id)
         findNavController().navigate(action)
     }
 
     override fun onResume() {
         super.onResume()
-        reportViewModel.load()
+        showLoader(loader, "Downloading donations")
+        loggedInViewModel.liveFirebaseUser.observe(viewLifecycleOwner, Observer { firebaseUser ->
+            if (firebaseUser != null) {
+                reportViewModel.liveFirebaseUser.value = firebaseUser
+                reportViewModel.load()
+            }
+        })
     }
 
     override fun onDestroyView() {
