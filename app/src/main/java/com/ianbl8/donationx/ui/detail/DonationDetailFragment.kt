@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ianbl8.donationx.databinding.FragmentDonationDetailBinding
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
+import com.ianbl8.donationx.ui.report.ReportViewModel
 
 class DonationDetailFragment : Fragment() {
 
@@ -19,6 +20,7 @@ class DonationDetailFragment : Fragment() {
     private val args by navArgs<DonationDetailFragmentArgs>()
     private var _fragBinding: FragmentDonationDetailBinding? = null
     private val fragBinding get() = _fragBinding!!
+    private val reportViewModel: ReportViewModel by activityViewModels()
     private val loggedInViewModel: LoggedInViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -37,6 +39,14 @@ class DonationDetailFragment : Fragment() {
                 loggedInViewModel.liveFirebaseUser.value?.email!!,
                 args.donationid,
                 fragBinding.donationvm?.observableDonation!!.value!!
+            )
+            findNavController().navigateUp()
+        }
+
+        fragBinding.deleteDonationButton.setOnClickListener {
+            reportViewModel.delete(
+                loggedInViewModel.liveFirebaseUser.value?.email!!,
+                detailViewModel.observableDonation.value?._id!!
             )
             findNavController().navigateUp()
         }

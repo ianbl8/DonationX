@@ -29,6 +29,7 @@ import com.ianbl8.donationx.main.DonationXApp
 import com.ianbl8.donationx.models.DonationModel
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.utils.SwipeToDeleteCallback
+import com.ianbl8.donationx.utils.SwipeToEditCallback
 import com.ianbl8.donationx.utils.createLoader
 import com.ianbl8.donationx.utils.hideLoader
 import com.ianbl8.donationx.utils.showLoader
@@ -82,14 +83,21 @@ class ReportFragment : Fragment(), DonationClickListener {
                 adapter.removeAt(viewHolder.adapterPosition)
                 reportViewModel.delete(
                     reportViewModel.liveFirebaseUser.value?.email!!,
-                    viewHolder.itemView.tag as String
+                    (viewHolder.itemView.tag as DonationModel)._id
                 )
                 hideLoader(loader)
             }
         }
-
         val itemTouchDeleteHelper = ItemTouchHelper(swipeDeleteHandler)
         itemTouchDeleteHelper.attachToRecyclerView(fragBinding.recyclerView)
+
+        val swipeEditHandler = object : SwipeToEditCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                onDonationClick(viewHolder.itemView.tag as DonationModel)
+            }
+        }
+        val itemTouchEditHelper = ItemTouchHelper(swipeEditHandler)
+        itemTouchEditHelper.attachToRecyclerView(fragBinding.recyclerView)
 
         return root
     }

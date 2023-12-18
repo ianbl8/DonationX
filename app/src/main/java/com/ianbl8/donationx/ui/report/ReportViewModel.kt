@@ -38,4 +38,5 @@ class ReportViewModel : ViewModel() {
             Timber.i("Retrofit delete error: ${e.message}")
         }
     }
+
 }

@@ -37,7 +37,7 @@ class DonationAdapter constructor(
     inner class MainHolder(val binding: CardDonationBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(donation: DonationModel, listener: DonationClickListener) {
-            binding.root.tag = donation._id
+            binding.root.tag = donation
             binding.donation = donation
             binding.imageIcon.setImageResource(R.mipmap.ic_launcher_round)
             binding.root.setOnClickListener { listener.onDonationClick(donation) }
