@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
+import com.ianbl8.donationx.firebase.FirebaseDBManager
 import com.ianbl8.donationx.models.DonationManager
 import com.ianbl8.donationx.models.DonationModel
 import timber.log.Timber
@@ -21,11 +22,11 @@ class ReportViewModel : ViewModel() {
 
     fun load() {
         try {
-            DonationManager.findAll(liveFirebaseUser.value?.email!!, donationsList)
-            Timber.i("Retrofit success: ${donationsList.value.toString()}")
+            FirebaseDBManager.findAll(liveFirebaseUser.value?.uid!!, donationsList)
+            Timber.i("Report success: ${donationsList.value.toString()}")
         }
         catch (e: Exception) {
-            Timber.i("Retrofit error: ${e.message}")
+            Timber.i("Report error: ${e.message}")
         }
     }
 

@@ -2,8 +2,11 @@ package com.ianbl8.donationx.firebase
 
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.ianbl8.donationx.models.DonationModel
 import com.ianbl8.donationx.models.DonationStore
 import timber.log.Timber
@@ -16,7 +19,22 @@ object FirebaseDBManager: DonationStore {
     }
 
     override fun findAll(userid: String, donationsList: MutableLiveData<List<DonationModel>>) {
-        TODO("Not yet implemented")
+        database.child("user-donations").child(userid).addValueEventListener(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                Timber.i("Firebase donation error: ${error.message}")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val localList = ArrayList<DonationModel>()
+                val children = snapshot.children
+                children.forEach {
+                    val donation = it.getValue(DonationModel::class.java)
+                    localList.add(donation!!)
+                }
+                database.child("user-donations").child(userid).removeEventListener(this)
+                donationsList.value = localList
+            }
+        })
     }
 
     override fun findById(
