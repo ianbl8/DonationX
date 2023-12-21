@@ -11,7 +11,7 @@ import com.ianbl8.donationx.models.DonationModel
 import com.ianbl8.donationx.models.DonationStore
 import timber.log.Timber
 
-object FirebaseDBManager: DonationStore {
+object FirebaseDBManager : DonationStore {
     var database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     override fun findAll(donationsList: MutableLiveData<List<DonationModel>>) {
@@ -19,22 +19,23 @@ object FirebaseDBManager: DonationStore {
     }
 
     override fun findAll(userid: String, donationsList: MutableLiveData<List<DonationModel>>) {
-        database.child("user-donations").child(userid).addValueEventListener(object: ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Timber.i("Firebase donation error: ${error.message}")
-            }
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val localList = ArrayList<DonationModel>()
-                val children = snapshot.children
-                children.forEach {
-                    val donation = it.getValue(DonationModel::class.java)
-                    localList.add(donation!!)
+        database.child("user-donations").child(userid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.i("Firebase donation error: ${error.message}")
                 }
-                database.child("user-donations").child(userid).removeEventListener(this)
-                donationsList.value = localList
-            }
-        })
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val localList = ArrayList<DonationModel>()
+                    val children = snapshot.children
+                    children.forEach {
+                        val donation = it.getValue(DonationModel::class.java)
+                        localList.add(donation!!)
+                    }
+                    database.child("user-donations").child(userid).removeEventListener(this)
+                    donationsList.value = localList
+                }
+            })
     }
 
     override fun findById(
@@ -42,7 +43,13 @@ object FirebaseDBManager: DonationStore {
         donationid: String,
         donation: MutableLiveData<DonationModel>
     ) {
-        TODO("Not yet implemented")
+        database.child("user-donations").child(userid).child(donationid).get()
+            .addOnSuccessListener {
+                donation.value = it.getValue(DonationModel::class.java)
+                Timber.i("Firebase get success ${it.value}")
+            }.addOnFailureListener {
+            Timber.e("Firebase get failure $it")
+        }
     }
 
     override fun create(firebaseUser: MutableLiveData<FirebaseUser>, donation: DonationModel) {
@@ -73,6 +80,12 @@ object FirebaseDBManager: DonationStore {
     }
 
     override fun update(userid: String, donationid: String, donation: DonationModel) {
-        TODO("Not yet implemented")
+        val donationValues = donation.toMap()
+
+        val childUpdate: MutableMap<String, Any?> = HashMap()
+        childUpdate["/donations/$donationid"] = donationValues
+        childUpdate["/user-donations/$userid/$donationid"] = donationValues
+
+        database.updateChildren(childUpdate)
     }
 }

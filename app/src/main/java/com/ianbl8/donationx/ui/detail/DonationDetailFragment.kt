@@ -36,7 +36,7 @@ class DonationDetailFragment : Fragment() {
 
         fragBinding.editDonationButton.setOnClickListener {
             detailViewModel.updateDonation(
-                loggedInViewModel.liveFirebaseUser.value?.email!!,
+                loggedInViewModel.liveFirebaseUser.value?.uid!!,
                 args.donationid,
                 fragBinding.donationvm?.observableDonation!!.value!!
             )
@@ -65,7 +65,7 @@ class DonationDetailFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         detailViewModel.getDonation(
-            loggedInViewModel.liveFirebaseUser.value?.email!!,
+            loggedInViewModel.liveFirebaseUser.value?.uid!!,
             args.donationid
         )
     }
