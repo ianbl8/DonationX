@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.ianbl8.donationx.firebase.FirebaseDBManager
-import com.ianbl8.donationx.models.DonationManager
 import com.ianbl8.donationx.models.DonationModel
 import timber.log.Timber
 
@@ -30,9 +29,9 @@ class ReportViewModel : ViewModel() {
         }
     }
 
-    fun delete(email: String, id: String) {
+    fun delete(userid: String, id: String) {
         try {
-            DonationManager.delete(email, id)
+            FirebaseDBManager.delete(userid, id)
             Timber.i("Retrofit delete success for ${id}")
         }
         catch (e: Exception) {

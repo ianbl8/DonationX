@@ -65,7 +65,11 @@ object FirebaseDBManager: DonationStore {
     }
 
     override fun delete(userid: String, donationid: String) {
-        TODO("Not yet implemented")
+        val childDelete: MutableMap<String, Any?> = HashMap()
+        childDelete["/donations/$donationid"] = null
+        childDelete["/user-donations/$userid/$donationid"] = null
+
+        database.updateChildren(childDelete)
     }
 
     override fun update(userid: String, donationid: String, donation: DonationModel) {
