@@ -83,7 +83,7 @@ class ReportFragment : Fragment(), DonationClickListener {
                 adapter.removeAt(viewHolder.adapterPosition)
                 reportViewModel.delete(
                     reportViewModel.liveFirebaseUser.value?.email!!,
-                    (viewHolder.itemView.tag as DonationModel)._id
+                    (viewHolder.itemView.tag as DonationModel).uid.toString()
                 )
                 hideLoader(loader)
             }
@@ -149,7 +149,7 @@ class ReportFragment : Fragment(), DonationClickListener {
 
     override fun onDonationClick(donation: DonationModel) {
         val action =
-            ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation._id)
+            ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation.uid.toString())
         findNavController().navigate(action)
     }
 

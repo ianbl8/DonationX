@@ -125,7 +125,7 @@ class DonateFragment : Fragment() {
                 totalDonated += amount
                 Timber.i("Total donated so far: \$$totalDonated")
                 donateViewModel.addDonation(
-                    DonationModel(
+                    loggedInViewModel.liveFirebaseUser, DonationModel(
                         paymentmethod = paymentmethod,
                         amount = amount,
                         email = loggedInViewModel.liveFirebaseUser.value?.email!!

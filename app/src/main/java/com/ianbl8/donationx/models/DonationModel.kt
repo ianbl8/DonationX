@@ -1,16 +1,29 @@
 package com.ianbl8.donationx.models
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.google.firebase.database.Exclude
+import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 
+@IgnoreExtraProperties
 @Parcelize
 data class DonationModel(
-    var _id: String = "N/A",
-    @SerializedName("paymenttype")
+    var uid: String? = "",
     val paymentmethod: String = "N/A",
-    var message: String = "n/a",
     var amount: Int = 0,
+    var message: String = "a message",
     var upvotes: Int = 0,
     var email: String = "joe@bloggs.com",
-) : Parcelable
+) : Parcelable {
+    @Exclude
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "uid" to uid,
+            "paymentmethod" to paymentmethod,
+            "amount" to amount,
+            "message" to message,
+            "upvotes" to upvotes,
+            "email" to email
+        )
+    }
+}
