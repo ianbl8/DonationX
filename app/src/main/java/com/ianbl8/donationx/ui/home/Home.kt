@@ -19,8 +19,6 @@ import com.ianbl8.donationx.databinding.NavHeaderBinding
 import com.ianbl8.donationx.firebase.FirebaseImageManager
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.ui.auth.Login
-import com.ianbl8.donationx.utils.customTransformation
-import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 class Home : AppCompatActivity() {
