@@ -14,6 +14,7 @@ class ReportViewModel : ViewModel() {
         get() = donationsList
 
     val liveFirebaseUser = MutableLiveData<FirebaseUser>()
+    var readOnly = MutableLiveData(false)
 
     init {
         load()
@@ -21,7 +22,19 @@ class ReportViewModel : ViewModel() {
 
     fun load() {
         try {
+            readOnly.value = false
             FirebaseDBManager.findAll(liveFirebaseUser.value?.uid!!, donationsList)
+            Timber.i("Report success: ${donationsList.value.toString()}")
+        }
+        catch (e: Exception) {
+            Timber.i("Report error: ${e.message}")
+        }
+    }
+
+    fun loadAll() {
+        try {
+            readOnly.value = true
+            FirebaseDBManager.findAll(donationsList)
             Timber.i("Report success: ${donationsList.value.toString()}")
         }
         catch (e: Exception) {

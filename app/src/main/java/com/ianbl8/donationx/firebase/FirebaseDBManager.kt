@@ -15,7 +15,23 @@ object FirebaseDBManager : DonationStore {
     var database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     override fun findAll(donationsList: MutableLiveData<List<DonationModel>>) {
-        TODO("Not yet implemented")
+        database.child("donations")
+            .addValueEventListener(object: ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.i("Firebase donation error: ${error.message}")
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val localList = ArrayList<DonationModel>()
+                    val children = snapshot.children
+                    children.forEach {
+                        val donation = it.getValue(DonationModel::class.java)
+                        localList.add(donation!!)
+                    }
+                    database.child("donations").removeEventListener(this)
+                    donationsList.value = localList
+                }
+            })
     }
 
     override fun findAll(userid: String, donationsList: MutableLiveData<List<DonationModel>>) {

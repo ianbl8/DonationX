@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
@@ -110,6 +111,17 @@ class ReportFragment : Fragment(), DonationClickListener {
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_report, menu)
+
+                val item = menu.findItem(R.id.toggleDonations) as MenuItem
+                item.setActionView(R.layout.togglebutton_layout)
+                val toggleDonations: SwitchCompat =
+                    item.actionView!!.findViewById(R.id.toggleButton)
+                toggleDonations.isChecked = false
+
+                toggleDonations.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) reportViewModel.loadAll()
+                    else reportViewModel.load()
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -122,7 +134,7 @@ class ReportFragment : Fragment(), DonationClickListener {
     }
 
     private fun render(donationsList: ArrayList<DonationModel>) {
-        fragBinding.recyclerView.adapter = DonationAdapter(donationsList, this)
+        fragBinding.recyclerView.adapter = DonationAdapter(donationsList, this, reportViewModel.readOnly.value!!)
         if (donationsList.isEmpty()) {
             Timber.i("donationsList is empty")
             fragBinding.recyclerView.visibility = View.GONE
@@ -138,7 +150,7 @@ class ReportFragment : Fragment(), DonationClickListener {
         fragBinding.swiperefresh.setOnRefreshListener {
             fragBinding.swiperefresh.isRefreshing = true
             showLoader(loader, "Downloading donations")
-            reportViewModel.load()
+            if (reportViewModel.readOnly.value!!) reportViewModel.loadAll() else reportViewModel.load()
         }
     }
 
@@ -150,7 +162,7 @@ class ReportFragment : Fragment(), DonationClickListener {
     override fun onDonationClick(donation: DonationModel) {
         val action =
             ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation.uid.toString())
-        findNavController().navigate(action)
+        if (!reportViewModel.readOnly.value!!) findNavController().navigate(action)
     }
 
     override fun onResume() {
