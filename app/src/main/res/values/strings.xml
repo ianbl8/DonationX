@@ -53,4 +53,5 @@
     <string name="emailpassword_title_text">Please Login Below</string>
     <string name="update">Update</string>
     <string name="delete">Delete</string>
+    <string name="select_profile_image">Select profile image</string>
 </resources>
