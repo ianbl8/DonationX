@@ -16,6 +16,8 @@ import com.ianbl8.donationx.databinding.HomeBinding
 import com.ianbl8.donationx.databinding.NavHeaderBinding
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.ui.auth.Login
+import com.ianbl8.donationx.utils.customTransformation
+import com.squareup.picasso.Picasso
 
 class Home : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
@@ -70,6 +72,14 @@ class Home : AppCompatActivity() {
         var headerView = homeBinding.navView.getHeaderView(0)
         navHeaderBinding = NavHeaderBinding.bind(headerView)
         navHeaderBinding.navHeaderEmail.text = currentUser.email
+        if (currentUser.displayName != null && currentUser.photoUrl != null) {
+            navHeaderBinding.navHeaderName.text = currentUser.displayName
+            Picasso.get().load(currentUser.photoUrl)
+                .resize(200, 200)
+                .transform(customTransformation())
+                .centerCrop()
+                .into(navHeaderBinding.navHeaderImage)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
