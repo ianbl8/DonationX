@@ -21,6 +21,7 @@ import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.FragmentDonateBinding
 import com.ianbl8.donationx.models.DonationModel
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
+import com.ianbl8.donationx.ui.map.MapsViewModel
 import com.ianbl8.donationx.ui.report.ReportViewModel
 import timber.log.Timber
 
@@ -32,6 +33,7 @@ class DonateFragment : Fragment() {
     private lateinit var donateViewModel: DonateViewModel
     private val reportViewModel: ReportViewModel by activityViewModels()
     private val loggedInViewModel: LoggedInViewModel by activityViewModels()
+    private val mapsViewModel: MapsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,7 +130,9 @@ class DonateFragment : Fragment() {
                     loggedInViewModel.liveFirebaseUser, DonationModel(
                         paymentmethod = paymentmethod,
                         amount = amount,
-                        email = loggedInViewModel.liveFirebaseUser.value?.email!!
+                        email = loggedInViewModel.liveFirebaseUser.value?.email!!,
+                        latitude = mapsViewModel.currentLocation.value!!.latitude,
+                        longitude = mapsViewModel.currentLocation.value!!.longitude
                     )
                 )
                 layout.totalSoFar.text = getString(R.string.totalSoFar, totalDonated)
