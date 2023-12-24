@@ -1,6 +1,8 @@
 package com.ianbl8.donationx.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -9,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +24,9 @@ import com.ianbl8.donationx.databinding.NavHeaderBinding
 import com.ianbl8.donationx.firebase.FirebaseImageManager
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.ui.auth.Login
+import com.ianbl8.donationx.ui.map.MapsViewModel
+import com.ianbl8.donationx.utils.checkLocationPermissions
+import com.ianbl8.donationx.utils.isPermissionGranted
 import com.ianbl8.donationx.utils.readImageUri
 import com.ianbl8.donationx.utils.showImagePicker
 import timber.log.Timber
@@ -33,6 +39,7 @@ class Home : AppCompatActivity() {
     private lateinit var loggedInViewModel: LoggedInViewModel
     private lateinit var headerView: View
     private lateinit var intentLauncher: ActivityResultLauncher<Intent>
+    private val mapsViewModel: MapsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +56,7 @@ class Home : AppCompatActivity() {
             setOf(
                 R.id.donateFragment,
                 R.id.reportFragment,
+                R.id.mapsFragment,
                 R.id.aboutUsFragment
             ), drawerLayout
         )
@@ -58,6 +66,8 @@ class Home : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         initNavHeader()
+
+        if(checkLocationPermissions(this)) mapsViewModel.updateCurrentLocation()
     }
 
     public override fun onStart() {
@@ -146,5 +156,23 @@ class Home : AppCompatActivity() {
                 RESULT_CANCELED -> { } else -> { }
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (isPermissionGranted(requestCode, grantResults)) {
+            mapsViewModel.updateCurrentLocation()
+        } else {
+            mapsViewModel.currentLocation.value = Location("Default").apply {
+                latitude = 52.245696
+                longitude -7.139102
+            }
+        }
+        Timber.i("Loc: %s", mapsViewModel.currentLocation.value)
     }
 }
