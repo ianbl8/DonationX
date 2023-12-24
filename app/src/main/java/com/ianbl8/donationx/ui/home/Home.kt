@@ -1,10 +1,12 @@
 package com.ianbl8.donationx.ui.home
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,10 +16,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.ianbl8.donationx.R
 import com.ianbl8.donationx.databinding.HomeBinding
 import com.ianbl8.donationx.databinding.NavHeaderBinding
+import com.ianbl8.donationx.firebase.FirebaseImageManager
 import com.ianbl8.donationx.ui.auth.LoggedInViewModel
 import com.ianbl8.donationx.ui.auth.Login
 import com.ianbl8.donationx.utils.customTransformation
 import com.squareup.picasso.Picasso
+import timber.log.Timber
 
 class Home : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
@@ -25,6 +29,7 @@ class Home : AppCompatActivity() {
     private lateinit var navHeaderBinding: NavHeaderBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loggedInViewModel: LoggedInViewModel
+    private lateinit var headerView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +54,7 @@ class Home : AppCompatActivity() {
         val navView = homeBinding.navView
         navView.setupWithNavController(navController)
 
-
+        initNavHeader()
     }
 
     public override fun onStart() {
@@ -57,7 +62,7 @@ class Home : AppCompatActivity() {
         loggedInViewModel = ViewModelProvider(this).get(LoggedInViewModel::class.java)
         loggedInViewModel.liveFirebaseUser.observe(this, Observer { firebaseUser ->
             if (firebaseUser != null) {
-                updateNavHeader(loggedInViewModel.liveFirebaseUser.value!!)
+                updateNavHeader(firebaseUser)
             }
         })
 
@@ -69,16 +74,37 @@ class Home : AppCompatActivity() {
     }
 
     private fun updateNavHeader(currentUser: FirebaseUser) {
-        var headerView = homeBinding.navView.getHeaderView(0)
-        navHeaderBinding = NavHeaderBinding.bind(headerView)
+        FirebaseImageManager.imageUri.observe(this) { result ->
+            if (result == Uri.EMPTY) {
+                Timber.i("DX no existing imageUri")
+                if (currentUser.photoUrl != null) {
+                    FirebaseImageManager.updateUserImage(
+                        currentUser.uid,
+                        currentUser.photoUrl,
+                        navHeaderBinding.navHeaderImage,
+                        false
+                    )
+                } else {
+                    Timber.i("DX loading existing default imageUri")
+                    FirebaseImageManager.updateDefaultImage(
+                        currentUser.uid,
+                        R.drawable.ic_launcher_homer,
+                        navHeaderBinding.navHeaderImage
+                    )
+                }
+            } else {
+                Timber.i("DX loading existing default imageUri")
+                FirebaseImageManager.updateUserImage(
+                    currentUser.uid,
+                    FirebaseImageManager.imageUri.value,
+                    navHeaderBinding.navHeaderImage,
+                    false
+                )
+            }
+        }
         navHeaderBinding.navHeaderEmail.text = currentUser.email
-        if (currentUser.displayName != null && currentUser.photoUrl != null) {
+        if (currentUser.displayName != null) {
             navHeaderBinding.navHeaderName.text = currentUser.displayName
-            Picasso.get().load(currentUser.photoUrl)
-                .resize(200, 200)
-                .transform(customTransformation())
-                .centerCrop()
-                .into(navHeaderBinding.navHeaderImage)
         }
     }
 
@@ -92,5 +118,11 @@ class Home : AppCompatActivity() {
         val intent = Intent(this, Login::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
+    }
+
+    private fun initNavHeader() {
+        Timber.i("DX Init Nav Header")
+        headerView = homeBinding.navView.getHeaderView(0)
+        navHeaderBinding = NavHeaderBinding.bind(headerView)
     }
 }
